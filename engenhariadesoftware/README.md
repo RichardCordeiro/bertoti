@@ -1,2 +1,1 @@
-# bertoti
-bertoti
+a engenharia de software é uma engenharia igua todas as outras, porém na área de da programação, ele não fala sobre codar em si mas sim sobre como codar e como ajustar seu código para que ele funcione por um bom tempo, com uma qualidade como se fosse a estrutura do código seguindo o sentido de engenharia.
