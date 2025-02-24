@@ -31,3 +31,7 @@ Codigos:
 ![Cliente](image.png)
 ![Loja](image-1.png)
 ![Teste](image-2.png)
+
+UML:
+
+![UML](image-3.png)
