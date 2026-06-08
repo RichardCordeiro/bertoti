@@ -1,44 +1,50 @@
-# Composite AntiPattern — Diagrama UML (ASCII)
+# Composite AntiPattern - UML
 
-## Estrutura
+## Diagrama de classes
 
+```mermaid
+classDiagram
+    direction LR
+
+    class CategoriaMenuAntiPattern {
+        -String nome
+        -List~ItemCardapioAntiPattern~ itens
+        -List~CategoriaMenuAntiPattern~ subcategorias
+        +CategoriaMenuAntiPattern(String nome)
+        +adicionarItem(item) void
+        +adicionarSubcategoria(subcategoria) void
+        +getItens() List
+        +getSubcategorias() List
+        +getNome() String
+    }
+
+    class ItemCardapioAntiPattern {
+        -String nome
+        -double preco
+        +ItemCardapioAntiPattern(String nome, double preco)
+        +getNome() String
+        +getPreco() double
+    }
+
+    CategoriaMenuAntiPattern o-- "0..*" ItemCardapioAntiPattern : itens
 ```
-+-------------------------------+    +-------------------------------+
-|   CategoriaMenuAntiPattern    |    |   ItemCardapioAntiPattern     |
-|-------------------------------|    |-------------------------------|
-| - nome: String                |    | - nome: String                |
-| - itens: List<ItemCardapio>   |    | - preco: double               |
-| - subcategorias: List<Categ.> |    |-------------------------------|
-|-------------------------------|    | + getNome(): String           |
-| + adicionarItem(Item)         |    | + getPreco(): double          |
-| + adicionarSubcategoria(Categ)|    +-------------------------------+
-| + getItens(): List<Item>      |
-| + getSubcategorias(): List<C> |
-| + getNome(): String           |
-+-------------------------------+
-```
 
-## Problema
+## Compatibilidade com o anti-pattern
 
-Não existe interface comum entre `CategoriaMenuAntiPattern` e `ItemCardapioAntiPattern`.  
-O cliente precisa saber exatamente com qual tipo está lidando para tratá-los diferente:
+| Elemento | Papel |
+|----------|-------|
+| `CategoriaMenuAntiPattern` | Classe que gerencia itens e subcategorias separadamente |
+| `ItemCardapioAntiPattern` | Classe de item simples |
+| `itens` | Lista exclusiva para folhas |
+| `subcategorias` | Lista recursiva de outras categorias, representada como atributo para evitar um laco visual gigante no diagrama |
 
-```
-Application
-  → chama getItens()        // só funciona em Categoria
-  → chama getSubcategorias()// só funciona em Categoria
-  → chama getNome/getPreco  // só funciona em Item
-```
+## Problemas
 
-## Relações
-
-| Elemento                   | Papel no AntiPattern                        |
-|----------------------------|---------------------------------------------|
-| CategoriaMenuAntiPattern   | Composite sem interface compartilhada       |
-| ItemCardapioAntiPattern     | Leaf sem interface compartilhada            |
-| Application                | Trata os dois tipos manualmente             |
+- Nao existe interface comum entre item e categoria.
+- O cliente precisa chamar metodos diferentes para itens e subcategorias.
+- O codigo precisa saber se esta lidando com `CategoriaMenuAntiPattern` ou `ItemCardapioAntiPattern`.
+- A hierarquia existe, mas nao existe transparencia de tratamento como no Composite.
 
 ## Como corrigir?
 
-→ Criar a interface `ComponenteMenu` com `exibir()` e `getPreco()`.  
-  Ambas as classes a implementam — cliente passa a tratar tudo de forma uniforme.
+Criar a interface `ComponenteMenu` e fazer tanto o item quanto a categoria implementarem `exibir()` e `getPreco()`.

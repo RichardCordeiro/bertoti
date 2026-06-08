@@ -1,71 +1,51 @@
-# Composite Pattern — Diagrama UML (ASCII)
+# Composite Pattern - UML
 
-## Estrutura
+## Diagrama de classes
 
-```
-+-----------------------------+
-|       <<interface>>         |
-|      ComponenteMenu         |
-|-----------------------------|
-| + exibir(indent: String)    |
-| + getPreco(): double        |
-+-----------------------------+
-              ^
-              |  implements
-       _______|_______
-       |              |
-       v              v
-+---------------+  +---------------------------+
-| ItemCardapio  |  |       CategoriaMenu       |
-| (Leaf)        |  | (Composite)               |
-|---------------|  |---------------------------|
-| - nome: String|  | - nome: String            |
-| - preco:double|  | - filhos: List<Componente>|
-|---------------|  |---------------------------|
-| +exibir()     |  | + adicionar(Componente)   |
-| +getPreco()   |  | + remover(Componente)     |
-+---------------+  | + exibir()               |
-                   | + getPreco()              |
-                   +---------------------------+
-                          |
-                          | contém (0..*)
-                          v
-                   +--------------------+
-                   |   ComponenteMenu   |
-                   +--------------------+
-                   (pode ser ItemCardapio
-                    ou outra CategoriaMenu)
+```mermaid
+classDiagram
+    class ComponenteMenu {
+        <<interface>>
+        +exibir(String indentacao) void
+        +getPreco() double
+    }
+
+    class ItemCardapio {
+        -String nome
+        -double preco
+        +ItemCardapio(String nome, double preco)
+        +exibir(String indentacao) void
+        +getPreco() double
+    }
+
+    class CategoriaMenu {
+        -String nome
+        -List~ComponenteMenu~ filhos
+        +CategoriaMenu(String nome)
+        +adicionar(ComponenteMenu componente) void
+        +remover(ComponenteMenu componente) void
+        +exibir(String indentacao) void
+        +getPreco() double
+    }
+
+    ComponenteMenu <|.. ItemCardapio
+    ComponenteMenu <|.. CategoriaMenu
+    CategoriaMenu o-- "0..*" ComponenteMenu : filhos
 ```
 
-## Hierarquia de exemplo
+## Compatibilidade com o padrão
 
-```
-[Cardápio do Restaurante]
-  [Entradas]
-    - Bruschetta: R$ 18,90
-    - Caldo de Feijão: R$ 12,00
-  [Pratos Principais]
-    [Carnes]
-      - Picanha na Brasa: R$ 89,90
-      - Frango Grelhado: R$ 52,00
-    [Massas]
-      - Spaghetti Carbonara: R$ 45,00
-      - Lasanha Bolonhesa: R$ 49,90
-  [Sobremesas]
-    - Pudim de Leite: R$ 15,00
-    - Mousse de Chocolate: R$ 17,00
-```
+| Elemento | Papel |
+|----------|-------|
+| `ComponenteMenu` | Component |
+| `ItemCardapio` | Leaf |
+| `CategoriaMenu` | Composite |
+| `filhos` | Lista que permite compor itens e categorias |
 
-## Relações
+## Por que é um pattern?
 
-| Elemento       | Papel                  |
-|----------------|------------------------|
-| ComponenteMenu | Component (interface)  |
-| ItemCardapio   | Leaf (nó folha)        |
-| CategoriaMenu  | Composite (nó interno) |
-
-## Por que é um PATTERN?
-
-- Cliente usa a mesma interface `ComponenteMenu` para **folhas e compostos**.  
-- Permite construir **hierarquias arbitrárias** sem if/else no cliente.  
-- `getPreco()` propaga recursivamente por toda a árvore — transparência total.
+- `ItemCardapio` e `CategoriaMenu` compartilham a mesma interface.
+- O cliente pode tratar folhas e grupos como `ComponenteMenu`.
+- `CategoriaMenu` pode conter outros `ComponenteMenu`, permitindo hierarquias recursivas.
+- `getPreco()` soma os valores dos filhos, propagando o calculo pela arvore.
+- O diagrama é compatível com o código em `Composite/Pattern`.

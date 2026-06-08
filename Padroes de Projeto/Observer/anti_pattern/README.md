@@ -1,44 +1,41 @@
-# Observer AntiPattern — Diagrama UML (ASCII)
+# Observer AntiPattern - UML
 
-## Estrutura
+## Diagrama de classes
 
+```mermaid
+classDiagram
+    class GerenciadorPedidoAntiPattern {
+        -String numeroPedido
+        -String status
+        -String emailDestinatario
+        -String telefoneDestinatario
+        -String dispositivoDestinatario
+        +GerenciadorPedidoAntiPattern(String numeroPedido)
+        +configurarEmail(String email) void
+        +configurarSMS(String telefone) void
+        +configurarPush(String dispositivo) void
+        +atualizarStatus(String novoStatus) void
+    }
 ```
-+---------------------------------------------+
-|         GerenciadorPedidoAntiPattern        |
-|---------------------------------------------|
-| - numeroPedido: String                      |
-| - status: String                            |
-| - notificarEmail: boolean   ← hardcoded     |
-| - emailDestinatario: String ← hardcoded     |
-| - notificarSMS: boolean     ← hardcoded     |
-| - telefoneDestinatario: String              |
-| - notificarPush: boolean    ← hardcoded     |
-| - dispositivoDestinatario: String           |
-|---------------------------------------------|
-| + configurarEmail(String)                   |
-| + configurarSMS(String)                     |
-| + configurarPush(String)                    |
-| + atualizarStatus(String)                   |
-|   ┌─────────────────────────────────────┐   |
-|   │ if notificarEmail → envia email     │   |
-|   │ if notificarSMS   → envia SMS       │   |
-|   │ if notificarPush  → envia Push      │   |
-|   │ // WhatsApp? → editar aqui ❌       │   |
-|   └─────────────────────────────────────┘   |
-+---------------------------------------------+
-```
+
+## Compatibilidade com o anti-pattern
+
+| Elemento | Papel |
+|----------|-------|
+| `GerenciadorPedidoAntiPattern` | Classe que gerencia pedido e notificacoes diretamente |
+| `emailDestinatario` | Configuracao hardcoded de email |
+| `telefoneDestinatario` | Configuracao hardcoded de SMS |
+| `dispositivoDestinatario` | Configuracao hardcoded de push |
+| `atualizarStatus()` | Atualiza status e contem a logica de envio dos canais |
 
 ## Problemas
 
-| Problema                    | Descrição                                                     |
-|-----------------------------|---------------------------------------------------------------|
-| Alto acoplamento            | Subject conhece todos os canais concretos                    |
-| Viola OCP                   | Novo canal = modificar `atualizarStatus()`                   |
-| Não extensível              | Impossível registrar/remover observers em runtime            |
-| Responsabilidade única      | Uma classe gerencia pedido E envia notificações              |
-| Difícil de testar           | Não há como mockar canais individualmente                    |
+- O subject conhece todos os canais concretos.
+- Novo canal exige alterar `GerenciadorPedidoAntiPattern`.
+- Nao existe lista de observers nem registro/remocao em runtime.
+- A classe mistura gerenciamento de pedido com envio de notificacoes.
+- O diagrama é compatível com o código em `Observer/anti_pattern`.
 
 ## Como corrigir?
 
-→ Aplicar o **Observer Pattern**: criar a interface `NotificacaoObserver`  
-  e fazer o subject manter uma lista de observers, sem conhecer suas implementações.
+Aplicar o **Observer Pattern**: criar `NotificacaoObserver` e fazer o gerenciador manter uma lista de observers.

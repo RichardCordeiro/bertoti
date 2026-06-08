@@ -1,60 +1,62 @@
-# Observer Pattern — Diagrama UML (ASCII)
+# Observer Pattern - UML
 
-## Estrutura
+## Diagrama de classes
 
+```mermaid
+classDiagram
+    class NotificacaoObserver {
+        <<interface>>
+        +atualizar(String numeroPedido, String status) void
+    }
+
+    class NotificacaoEmail {
+        -String email
+        +NotificacaoEmail(String email)
+        +atualizar(String numeroPedido, String status) void
+    }
+
+    class NotificacaoSMS {
+        -String telefone
+        +NotificacaoSMS(String telefone)
+        +atualizar(String numeroPedido, String status) void
+    }
+
+    class NotificacaoPush {
+        -String dispositivo
+        +NotificacaoPush(String dispositivo)
+        +atualizar(String numeroPedido, String status) void
+    }
+
+    class GerenciadorPedido {
+        -String numeroPedido
+        -String status
+        -List~NotificacaoObserver~ observers
+        +GerenciadorPedido(String numeroPedido)
+        +adicionarObserver(NotificacaoObserver observer) void
+        +removerObserver(NotificacaoObserver observer) void
+        +atualizarStatus(String novoStatus) void
+        -notificarTodos() void
+    }
+
+    NotificacaoObserver <|.. NotificacaoEmail
+    NotificacaoObserver <|.. NotificacaoSMS
+    NotificacaoObserver <|.. NotificacaoPush
+    GerenciadorPedido o-- "0..*" NotificacaoObserver : observers
 ```
-+-----------------------------+
-|       <<interface>>         |
-|     NotificacaoObserver     |
-|-----------------------------|
-| + atualizar(numeroPedido,   |
-|             status): void   |
-+-----------------------------+
-              ^
-              |  implements
-    __________|_______________
-    |          |              |
-    v          v              v
-+----------+ +----------+ +-----------+
-| Notificacao| Notificacao| Notificacao|
-|   Email   | |   SMS    | |   Push    |
-|----------| |----------| |-----------|
-|- email   | |-telefone | |-dispositivo|
-|+atualizar| |+atualizar| |+atualizar | |
-+----------+ +----------+ +-----------+
 
-+-------------------------------+
-|      GerenciadorPedido        |  <Subject / Publisher>
-|-------------------------------|
-| - numeroPedido: String        |
-| - status: String              |
-| - observers: List<Observer>   |
-|-------------------------------|
-| + adicionarObserver(Observer) |
-| + removerObserver(Observer)   |
-| + atualizarStatus(String)     |
-| - notificarTodos()            |
-+-------------------------------+
-        |
-        | notifica (1..*)
-        v
-+-----------------------------+
-|     NotificacaoObserver     |
-+-----------------------------+
-```
+## Compatibilidade com o padrão
 
-## Relações
+| Elemento | Papel |
+|----------|-------|
+| `NotificacaoObserver` | Observer |
+| `NotificacaoEmail` | ConcreteObserver |
+| `NotificacaoSMS` | ConcreteObserver |
+| `NotificacaoPush` | ConcreteObserver |
+| `GerenciadorPedido` | Subject / Publisher |
 
-| Elemento             | Papel                        |
-|----------------------|------------------------------|
-| NotificacaoObserver  | Observer (interface)         |
-| NotificacaoEmail     | ConcreteObserver A           |
-| NotificacaoSMS       | ConcreteObserver B           |
-| NotificacaoPush      | ConcreteObserver C           |
-| GerenciadorPedido    | Subject (Publisher)          |
+## Por que é um pattern?
 
-## Por que é um PATTERN?
-
-- O `GerenciadorPedido` **não conhece** os tipos concretos de notificação.  
-- Novos canais (WhatsApp, Telegram…) se registram **sem alterar** o subject.  
-- Segue **OCP** e promove **baixo acoplamento** entre publisher e subscribers.
+- `GerenciadorPedido` mantem uma lista de observers pela interface `NotificacaoObserver`.
+- Os canais concretos se registram e podem ser removidos em tempo de execução.
+- O subject nao precisa saber se esta notificando email, SMS, push ou outro canal futuro.
+- O diagrama é compatível com o código em `Observer/Pattern`.
